@@ -1,0 +1,27 @@
+.events-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: 12px;
+  padding: 16px;
+}
+.events-toolbar input,
+.events-toolbar select {
+  padding: 11px 13px;
+  border: 1px solid var(--paper-200);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  background: var(--paper-0);
+}
+.events-toolbar input:focus,
+.events-toolbar select:focus {
+  outline: none;
+  border-color: var(--orange-500);
+  box-shadow: 0 0 0 3px var(--orange-100);
+}
+
+@media (max-width: 900px) {
+  .events-toolbar { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .events-toolbar { grid-template-columns: 1fr; }
+}
