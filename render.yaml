@@ -1,0 +1,25 @@
+services:
+  # Backend API (Flask + SQLite3)
+  - type: web
+    name: booktix-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: "10000"
+
+  # Frontend (React + Vite)
+  - type: web
+    name: booktix-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
