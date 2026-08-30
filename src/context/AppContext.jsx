@@ -12,7 +12,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? (import.meta.env.VITE_API_URL.endsWith('/api') ? import.meta.env.VITE_API_URL : `${import.meta.env.VITE_API_URL}/api`)
-  : 'http://localhost:5000/api';
+  : 'https://bookticket-z0wx.onrender.com/api';
 
 
 const AppContext = createContext(null);
