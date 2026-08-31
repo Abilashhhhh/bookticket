@@ -12,13 +12,22 @@ export default function Booking() {
 
   const ticketTypes = useMemo(() => (event ? ticketTypesFor(event) : []), [event]);
 
-  const [form, setForm] = useState({
-    ticketType: ticketTypes[0]?.type || 'General',
-    quantity: 1,
-    name: currentUser?.name || '',
-    email: currentUser?.email || '',
-    phone: '',
-  });
+const countries = [
+  { code: 'IN', name: 'India', dial: '+91', digits: 10 },
+  { code: 'US', name: 'USA', dial: '+1', digits: 10 },
+  { code: 'UK', name: 'UK', dial: '+44', digits: 10 },
+  { code: 'AE', name: 'UAE', dial: '+971', digits: 9 },
+  { code: 'AU', name: 'Australia', dial: '+61', digits: 9 },
+];
+
+const [form, setForm] = useState({
+  ticketType: ticketTypes[0]?.type || 'General',
+  quantity: 1,
+  country: 'IN',
+  name: currentUser?.name || '',
+  email: currentUser?.email || '',
+  phone: '',
+});
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -42,7 +51,11 @@ export default function Booking() {
     const e = {};
     if (!form.name.trim()) e.name = 'Name is required.';
     if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Enter a valid email.';
-    if (!/^[0-9+\-\s]{7,15}$/.test(form.phone)) e.phone = 'Enter a valid phone number.';
+    const selectedCountry = countries.find(c => c.code === form.country);
+      const digitsOnly = form.phone.replace(/\D/g, '');
+      if (digitsOnly.length !== selectedCountry.digits) {
+      e.phone = `Enter a valid ${selectedCountry.digits}-digit phone number for ${selectedCountry.name}.`;
+}
     if (form.quantity < 1) e.quantity = 'Select at least 1 ticket.';
     if (form.quantity > remaining) e.quantity = `Only ${remaining} tickets left.`;
     setErrors(e);
@@ -62,7 +75,7 @@ export default function Booking() {
         amount: total,
         userName: form.name,
         email: form.email,
-        phone: form.phone,
+       phone: `${countries.find(c => c.code === form.country).dial} ${form.phone}`,
       });
       navigate(`/payment/${booking.rawId}`);
     } catch (err) {
@@ -115,9 +128,28 @@ export default function Booking() {
               <input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={(e) => update('email', e.target.value)} />
               {errors.email && <p className="field-error">{errors.email}</p>}
             </div>
-            <div className="field">
-              <label htmlFor="phone">Phone number</label>
-              <input id="phone" type="tel" placeholder="+91 90000 00000" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+              <div className="field">
+                <label htmlFor="phone">Phone number</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                  <select
+                   id="country"
+                   value={form.country}
+                   onChange={(e) => update('country', e.target.value)}
+                   style={{ maxWidth: 110 }}
+                >
+                  {countries.map(c => (
+                    <option key={c.code} value={c.code}>{c.dial} {c.code}</option>
+                  ))}
+                </select>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="Phone number"
+                  value={form.phone}
+                  onChange={(e) => update('phone', e.target.value.replace(/[^0-9]/g, ''))}
+                  style={{ flex: 1 }}
+                />
+              </div>
               {errors.phone && <p className="field-error">{errors.phone}</p>}
             </div>
           </div>

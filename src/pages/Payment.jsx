@@ -27,6 +27,8 @@ export default function Payment() {
   const [processing, setProcessing] = useState(false);
   const [payError, setPayError] = useState('');
   const [card, setCard] = useState({ number: '', name: '', expiry: '', cvv: '' });
+  const [upiId, setUpiId] = useState('');
+  const [errors, setErrors] = useState({});
 
   if (loading) {
     return <div className="page container empty-state"><h3>Loading your booking…</h3></div>;
@@ -51,10 +53,23 @@ export default function Payment() {
       </div>
     );
   }
-
+  const validateCard = () =>
+     { const e = {}; if (method === 'card') { const digits = card.number.replace(/\s/g, '');
+      if (!/^\d{16}$/.test(digits)) e.number = 'Enter a valid 16-digit card number.';
+       if (!card.name.trim()) e.name = 'Name on card is required.'; 
+       if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(card.expiry)) { e.expiry = 'Enter expiry as MM/YY.'; }
+       else { const [mm, yy] = card.expiry.split('/').map(Number);
+        const now = new Date();
+         const currentYear = now.getFullYear() % 100; 
+         const currentMonth = now.getMonth() + 1; 
+          if (yy < currentYear || (yy === currentYear && mm < currentMonth)) { e.expiry = 'This card has expired.'; } }
+           if (!/^\d{3}$/.test(card.cvv)) e.cvv = 'Enter a valid 3-digit CVV.'; } else if (method === 'upi')
+            { if (!/^[\w.-]+@[\w]+$/.test(upiId)) e.upi = 'Enter a valid UPI ID (e.g. name@bank).'; } setErrors(e);
+            return Object.keys(e).length === 0; };
   const handlePay = async (e) => {
     e.preventDefault();
     setPayError('');
+    if (!validateCard()) return;
     setProcessing(true);
     try {
       // Simulated demo payment gateway — replace this whole block with a
@@ -94,20 +109,20 @@ export default function Payment() {
               <>
                 <div className="field">
                   <label>Card number</label>
-                  <input required maxLength={19} placeholder="4242 4242 4242 4242" value={card.number} onChange={(e) => setCard({ ...card, number: e.target.value })} />
+                  <input required maxLength={19} placeholder="4242 4242 4242 4242" value={card.number} onChange={(e) => setCard({ ...card, number: e.target.value.replace(/[^0-9\s]/g, '') })} /> {errors.number && <p className="field-error">{errors.number}</p>}
                 </div>
                 <div className="field">
                   <label>Name on card</label>
-                  <input required placeholder="As printed on card" value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} />
+                   <input required placeholder="As printed on card" value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} /> {errors.name && <p className="field-error">{errors.name}</p>}
                 </div>
                 <div className="field-row">
                   <div className="field">
                     <label>Expiry</label>
-                    <input required placeholder="MM/YY" value={card.expiry} onChange={(e) => setCard({ ...card, expiry: e.target.value })} />
+                     <input required maxLength={5} placeholder="MM/YY" value={card.expiry} onChange={(e) => setCard({ ...card, expiry: e.target.value })} /> {errors.expiry && <p className="field-error">{errors.expiry}</p>}
                   </div>
                   <div className="field">
                     <label>CVV</label>
-                    <input required maxLength={3} placeholder="•••" value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value })} />
+                    <input required maxLength={3} placeholder="•••" value={card.cvv} onChange={(e) => setCard({ ...card, cvv: e.target.value.replace(/[^0-9]/g, '') })} /> {errors.cvv && <p className="field-error">{errors.cvv}</p>}
                   </div>
                 </div>
               </>
@@ -115,7 +130,7 @@ export default function Payment() {
             {method === 'upi' && (
               <div className="field">
                 <label>UPI ID</label>
-                <input required placeholder="yourname@upi" />
+                <input required placeholder="yourname@upi" value={upiId} onChange={(e) => setUpiId(e.target.value)} /> {errors.upi && <p className="field-error">{errors.upi}</p>}
               </div>
             )}
             {method === 'netbanking' && (
