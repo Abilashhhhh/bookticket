@@ -63,7 +63,7 @@ export default function Payment() {
          const currentYear = now.getFullYear() % 100; 
          const currentMonth = now.getMonth() + 1; 
           if (yy < currentYear || (yy === currentYear && mm < currentMonth)) { e.expiry = 'This card has expired.'; } }
-           if (!/^\d{3}$/.test(card.cvv)) e.cvv = 'Enter a valid 3-digit CVV.'; } else if (method === 'upi')
+           if (!/^\d{3}$/.test(card.cvv)) e.cvv = 'Enter a valid 3-digit CVV.'; } else if (method === 'upi' || method === 'gpay' || method === 'phonepe')
             { if (!/^[\w.-]+@[\w]+$/.test(upiId)) e.upi = 'Enter a valid UPI ID (e.g. name@bank).'; } setErrors(e);
             return Object.keys(e).length === 0; };
   const handlePay = async (e) => {
@@ -92,14 +92,14 @@ export default function Payment() {
           <p className="muted" style={{ marginBottom: 24 }}>This is a demo payment flow — no real transaction is made.</p>
 
           <div className="payment-methods">
-            {['card', 'upi', 'netbanking'].map(m => (
+             {['card', 'upi', 'gpay', 'phonepe', 'netbanking'].map(m => (
               <button
                 type="button"
                 key={m}
                 className={'payment-method' + (method === m ? ' active' : '')}
                 onClick={() => setMethod(m)}
               >
-                {m === 'card' ? '💳 Card' : m === 'upi' ? '📱 UPI' : '🏦 Net Banking'}
+                {m === 'card' ? '💳 Card' : m === 'upi' ? '📱 UPI' : m === 'gpay' ? '🏨 Google Pay' : m === 'phonepe' ? '🟪 PhonePe' : '🏦 Net Banking'}
               </button>
             ))}
           </div>
@@ -133,16 +133,21 @@ export default function Payment() {
                 <input required placeholder="yourname@upi" value={upiId} onChange={(e) => setUpiId(e.target.value)} /> {errors.upi && <p className="field-error">{errors.upi}</p>}
               </div>
             )}
-            {method === 'netbanking' && (
+                        {(method === 'upi' || method === 'gpay' || method === 'phonepe') && (
               <div className="field">
-                <label>Select bank</label>
-                <select required defaultValue="">
-                  <option value="" disabled>Choose your bank</option>
-                  <option>State Bank of India</option>
-                  <option>HDFC Bank</option>
-                  <option>ICICI Bank</option>
-                  <option>Axis Bank</option>
-                </select>
+                <label>UPI ID</label>
+                <input
+                  required
+                  placeholder={method === 'gpay' ? 'yourname@okaxis' : method === 'phonepe' ? 'yourname@ybl' : 'yourname@upi'}
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                />
+                {errors.upi && <p className="field-error">{errors.upi}</p>}
+                {(method === 'gpay' || method === 'phonepe') && (
+                  <p className="hint">
+                    You'll be redirected to {method === 'gpay' ? 'Google Pay' : 'PhonePe'} to complete this payment.
+                  </p>
+                )}
               </div>
             )}
 
