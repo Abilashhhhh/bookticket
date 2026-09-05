@@ -9,13 +9,10 @@ from models.organizer import get_or_create_organizer_id
 
 
 def _row_to_dict(row):
-    """Converts DB column names (snake_case) to the JSON shape the
-    frontend expects (camelCase-ish, matching mockData.js)."""
     if not row:
         return None
     row = dict(row)
     return {
-
         'id': row['id'],
         'name': row['name'],
         'category': row['category'],
@@ -38,7 +35,6 @@ def _row_to_dict(row):
 def get_all_events(category=None, city=None, search=None):
     conn = get_connection()
     cursor = conn.cursor()
-
     query = """
         SELECT e.*, o.name AS organizer_name
         FROM events e
@@ -47,13 +43,13 @@ def get_all_events(category=None, city=None, search=None):
     """
     params = []
     if category and category != 'All':
-        query += " AND e.category = ?"
+        query += " AND e.category = %s"
         params.append(category)
     if city and city != 'All':
-        query += " AND e.city = ?"
+        query += " AND e.city = %s"
         params.append(city)
     if search:
-        query += " AND (e.name LIKE ? OR e.city LIKE ? OR e.category LIKE ?)"
+        query += " AND (e.name LIKE %s OR e.city LIKE %s OR e.category LIKE %s)"
         like = f"%{search}%"
         params.extend([like, like, like])
     query += " ORDER BY e.event_date ASC"
@@ -72,7 +68,7 @@ def get_event_by_id(event_id):
         SELECT e.*, o.name AS organizer_name
         FROM events e
         LEFT JOIN organizers o ON o.id = e.organizer_id
-        WHERE e.id = ?
+        WHERE e.id = %s
     """, (event_id,))
     row = cursor.fetchone()
     cursor.close()
@@ -92,7 +88,7 @@ def create_event(data):
         INSERT INTO events
             (name, category, event_date, event_time, venue, city, organizer_id,
              price, price_premium, price_vip, total_tickets, tickets_sold, status, image_url, description)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'Active', ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 'Active', %s, %s)
     """, (
         data['name'], data['category'], data['date'], data['time'],
         data['venue'], data['city'], organizer_id,
@@ -115,11 +111,11 @@ def update_event(event_id, data):
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE events SET
-            name = ?, category = ?, event_date = ?, event_time = ?,
-            venue = ?, city = ?, organizer_id = ?,
-            price = ?, price_premium = ?, price_vip = ?, total_tickets = ?,
-            image_url = ?, description = ?
-        WHERE id = ?
+            name = %s, category = %s, event_date = %s, event_time = %s,
+            venue = %s, city = %s, organizer_id = %s,
+            price = %s, price_premium = %s, price_vip = %s, total_tickets = %s,
+            image_url = %s, description = %s
+        WHERE id = %s
     """, (
         data['name'], data['category'], data['date'], data['time'],
         data['venue'], data['city'], organizer_id,
@@ -136,7 +132,7 @@ def update_event(event_id, data):
 def delete_event(event_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM events WHERE id = ?", (event_id,))
+    cursor.execute("DELETE FROM events WHERE id = %s", (event_id,))
     conn.commit()
     affected = cursor.rowcount
     cursor.close()
@@ -148,10 +144,9 @@ def increment_tickets_sold(event_id, quantity):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE events SET tickets_sold = tickets_sold + ? WHERE id = ?",
+        "UPDATE events SET tickets_sold = tickets_sold + %s WHERE id = %s",
         (quantity, event_id),
     )
     conn.commit()
     cursor.close()
     conn.close()
-

@@ -1,9 +1,7 @@
 """
 models/user.py
 --------------
-All database queries related to the `users` table live here. Routes call
-these functions instead of writing SQL directly, so the SQL only exists in
-one place.
+All database queries related to the `users` table.
 """
 
 from models.db import get_connection
@@ -13,7 +11,7 @@ def create_user(name, email, password_hash, phone=None, role='Attendee'):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO users (name, email, password_hash, phone, role) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO users (name, email, password_hash, phone, role) VALUES (%s, %s, %s, %s, %s)",
         (name, email, password_hash, phone, role),
     )
     conn.commit()
@@ -26,7 +24,7 @@ def create_user(name, email, password_hash, phone=None, role='Attendee'):
 def get_user_by_email(email):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     row = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -53,4 +51,3 @@ def get_all_users():
     cursor.close()
     conn.close()
     return users
-

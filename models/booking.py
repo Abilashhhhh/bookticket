@@ -12,7 +12,6 @@ def _row_to_dict(row):
         return None
     row = dict(row)
     return {
-
         'id': f"BKG-{row['id']:05d}",
         'rawId': row['id'],
         'eventId': row['event_id'],
@@ -35,7 +34,7 @@ def create_booking(data):
     cursor.execute("""
         INSERT INTO bookings
             (event_id, user_name, email, phone, ticket_type, quantity, amount, status, payment_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', 'Pending')
+        VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending', 'Pending')
     """, (
         data['eventId'], data['userName'], data['email'], data['phone'],
         data['ticketType'], data['quantity'], data['amount'],
@@ -54,7 +53,7 @@ def get_booking_by_raw_id(booking_id):
         SELECT b.*, e.name AS event_name
         FROM bookings b
         JOIN events e ON e.id = b.event_id
-        WHERE b.id = ?
+        WHERE b.id = %s
     """, (booking_id,))
     row = cursor.fetchone()
     cursor.close()
@@ -69,7 +68,7 @@ def get_bookings_by_email(email):
         SELECT b.*, e.name AS event_name
         FROM bookings b
         JOIN events e ON e.id = b.event_id
-        WHERE b.email = ?
+        WHERE b.email = %s
         ORDER BY b.created_at DESC
     """, (email,))
     rows = cursor.fetchall()
@@ -94,12 +93,11 @@ def get_all_bookings():
 
 
 def update_payment_status(booking_id, payment_status):
-    """payment_status is 'Paid' or 'Failed'. Confirms/cancels the booking to match."""
     booking_status = 'Confirmed' if payment_status == 'Paid' else 'Cancelled'
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE bookings SET payment_status = ?, status = ? WHERE id = ?",
+        "UPDATE bookings SET payment_status = %s, status = %s WHERE id = %s",
         (payment_status, booking_status, booking_id),
     )
     conn.commit()
@@ -107,4 +105,3 @@ def update_payment_status(booking_id, payment_status):
     cursor.close()
     conn.close()
     return affected > 0
-

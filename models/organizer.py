@@ -12,7 +12,6 @@ def _row_to_dict(row):
         return None
     row = dict(row)
     return {
-
         'id': row['id'],
         'name': row['name'],
         'email': row['email'],
@@ -42,7 +41,7 @@ def create_organizer(name, email, phone, status='Active'):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO organizers (name, email, phone, status) VALUES (?, ?, ?, ?)",
+        "INSERT INTO organizers (name, email, phone, status) VALUES (%s, %s, %s, %s)",
         (name, email, phone, status),
     )
     conn.commit()
@@ -56,7 +55,7 @@ def update_organizer(organizer_id, name, email, phone, status):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE organizers SET name=?, email=?, phone=?, status=? WHERE id=?",
+        "UPDATE organizers SET name=%s, email=%s, phone=%s, status=%s WHERE id=%s",
         (name, email, phone, status, organizer_id),
     )
     conn.commit()
@@ -69,7 +68,7 @@ def update_organizer(organizer_id, name, email, phone, status):
 def delete_organizer(organizer_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM organizers WHERE id = ?", (organizer_id,))
+    cursor.execute("DELETE FROM organizers WHERE id = %s", (organizer_id,))
     conn.commit()
     affected = cursor.rowcount
     cursor.close()
@@ -78,44 +77,34 @@ def delete_organizer(organizer_id):
 
 
 def get_or_create_organizer_id(name):
-    """
-    Used when adding/editing an EVENT: the admin just types an organizer's
-    NAME in a text box (matching the frontend form). This looks up whether
-    an organizer with that name already exists — if so, reuses it; if not,
-    creates a new organizer record automatically so the event can link to
-    it via organizer_id (a foreign key).
-    """
     if not name or not name.strip():
         return None
     name = name.strip()
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM organizers WHERE LOWER(name) = LOWER(?)", (name,))
+    cursor.execute("SELECT id FROM organizers WHERE LOWER(name) = LOWER(%s)", (name,))
     row = cursor.fetchone()
     if row:
         cursor.close()
         conn.close()
         return row['id']
 
-    # Not found — create it with a generated placeholder email
     placeholder_email = f"{name.lower().replace(' ', '')}@auto.booktix"
     insert_cursor = conn.cursor()
     try:
         insert_cursor.execute(
-            "INSERT INTO organizers (name, email, status) VALUES (?, ?, 'Active')",
+            "INSERT INTO organizers (name, email, status) VALUES (%s, %s, 'Active')",
             (name, placeholder_email),
         )
         conn.commit()
         new_id = insert_cursor.lastrowid
     except Exception:
-        # Re-use existing row if email already exists
         conn.rollback()
-        cursor.execute("SELECT id FROM organizers WHERE email = ?", (placeholder_email,))
+        cursor.execute("SELECT id FROM organizers WHERE email = %s", (placeholder_email,))
         existing = cursor.fetchone()
         new_id = existing['id'] if existing else None
     insert_cursor.close()
     cursor.close()
     conn.close()
     return new_id
-
