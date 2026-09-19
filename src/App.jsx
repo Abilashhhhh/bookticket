@@ -12,10 +12,10 @@ import Payment from './pages/Payment';
 import MyTickets from './pages/MyTickets';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Privacy from './pages/Privacy';
-import ForgotPassword from './pages/ForgotPassword';
+import About from './pages/about';
+import Contact from './pages/contact';
+import Privacy from './pages/privacy';
+import ForgotPassword from './pages/forgotpassword';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageEvents from './pages/admin/ManageEvents';
