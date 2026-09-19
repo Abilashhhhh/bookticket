@@ -12,6 +12,10 @@ import Payment from './pages/Payment';
 import MyTickets from './pages/MyTickets';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Privacy from './pages/Privacy';
+import ForgotPassword from './pages/ForgotPassword';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageEvents from './pages/admin/ManageEvents';
@@ -35,6 +39,10 @@ export default function App() {
             <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
 
           {/* Admin console */}

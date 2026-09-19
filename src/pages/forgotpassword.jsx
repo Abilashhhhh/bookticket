@@ -4,11 +4,11 @@ import { useApp } from '../context/AppContext';
 import Logo from '../components/Logo';
 import './auth.css';
 
-export default function Register() {
-  const { register, sendOtp, verifyOtp } = useApp();
+export default function ForgotPassword() {
+  const { sendOtp, verifyOtp, resetPassword } = useApp();
   const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1 = enter details, 2 = enter OTP + password
-  const [form, setForm] = useState({ name: '', email: '', otp: '', password: '', confirm: '' });
+  const [step, setStep] = useState(1); // 1 = enter email, 2 = enter OTP + new password
+  const [form, setForm] = useState({ email: '', otp: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -18,16 +18,12 @@ export default function Register() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.name.trim()) {
-      setError('Please enter your full name.');
-      return;
-    }
     if (!emailRegex.test(form.email)) {
       setError('Please enter a valid email address.');
       return;
     }
     setSending(true);
-    const result = await sendOtp(form.email, 'register');
+    const result = await sendOtp(form.email, 'reset-password');
     setSending(false);
     if (!result.ok) {
       setError(result.message);
@@ -36,7 +32,7 @@ export default function Register() {
     setStep(2);
   };
 
-  const handleVerifyAndCreate = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
     setError('');
     if (form.password !== form.confirm) {
@@ -44,36 +40,32 @@ export default function Register() {
       return;
     }
     setSubmitting(true);
-    const otpResult = await verifyOtp(form.email, form.otp, 'register');
+    const otpResult = await verifyOtp(form.email, form.otp, 'reset-password');
     if (!otpResult.ok) {
       setSubmitting(false);
       setError(otpResult.message);
       return;
     }
-    const result = await register(form);
+    const result = await resetPassword(form.email, form.password);
     setSubmitting(false);
     if (!result.ok) {
       setError(result.message);
       return;
     }
-    navigate('/');
+    navigate('/login');
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card card">
         <Link to="/" className="auth-logo"><Logo /></Link>
-        <h1>Create your account</h1>
-        <p className="muted" style={{ marginBottom: 20 }}>Register to book tickets and track your events in one place.</p>
+        <h1>Reset your password</h1>
+        <p className="muted" style={{ marginBottom: 20 }}>We'll email you a code to verify it's really you.</p>
 
         {error && <p className="auth-error">{error}</p>}
 
         {step === 1 && (
           <form onSubmit={handleSendOtp}>
-            <div className="field">
-              <label htmlFor="name">Full name</label>
-              <input id="name" type="text" required placeholder="Your full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            </div>
             <div className="field">
               <label htmlFor="email">Email address</label>
               <input id="email" type="email" required placeholder="you@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
@@ -85,9 +77,9 @@ export default function Register() {
         )}
 
         {step === 2 && (
-          <form onSubmit={handleVerifyAndCreate}>
+          <form onSubmit={handleReset}>
             <p className="hint" style={{ marginBottom: 16 }}>
-              We sent a 6-digit code to <strong>{form.email}</strong>. Enter it below to verify your email.
+              We sent a 6-digit code to <strong>{form.email}</strong>.
             </p>
             <div className="field">
               <label htmlFor="otp">Verification code</label>
@@ -103,30 +95,21 @@ export default function Register() {
             </div>
             <div className="field-row">
               <div className="field">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">New password</label>
                 <input id="password" type="password" required placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
               </div>
               <div className="field">
-                <label htmlFor="confirm">Confirm password</label>
+                <label htmlFor="confirm">Confirm new password</label>
                 <input id="confirm" type="password" required placeholder="••••••••" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} />
               </div>
             </div>
             <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
-              {submitting ? 'Creating account…' : 'Verify & Create Account'}
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline btn-block"
-              style={{ marginTop: 10 }}
-              onClick={() => setStep(1)}
-              disabled={submitting}
-            >
-              Back
+              {submitting ? 'Resetting…' : 'Reset Password'}
             </button>
           </form>
         )}
 
-        <p className="auth-switch" style={{ marginTop: 20 }}>Already have an account? <Link to="/login">Log in</Link></p>
+        <p className="auth-switch" style={{ marginTop: 20 }}>Remembered it? <Link to="/login">Log in</Link></p>
       </div>
     </div>
   );

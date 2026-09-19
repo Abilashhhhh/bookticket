@@ -44,6 +44,9 @@ export default function Login() {
             <input id="password" type="password" required placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
           </div>
           <button type="submit" className="btn btn-primary btn-block">Log In</button>
+          <p style={{ textAlign: 'right', marginTop: 8 }}>
+  <Link to="/forgot-password" style={{ fontSize: 14 }}>Forgot password?</Link>
+</p>
         </form>
 
         <p className="auth-hint">Demo tip: log in with an email containing "admin" (e.g. admin@booktix.com) to view the Admin Panel.</p>

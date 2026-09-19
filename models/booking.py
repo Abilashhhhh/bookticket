@@ -16,6 +16,9 @@ def _row_to_dict(row):
         'rawId': row['id'],
         'eventId': row['event_id'],
         'eventName': row.get('event_name'),
+        'organizerName': row.get('organizer_name') or '',
+        'organizerEmail': row.get('organizer_email') or '',
+        'organizerPhone': row.get('organizer_phone') or '',
         'userName': row['user_name'],
         'email': row['email'],
         'phone': row['phone'],
@@ -50,10 +53,10 @@ def get_booking_by_raw_id(booking_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT b.*, e.name AS event_name
-        FROM bookings b
-        JOIN events e ON e.id = b.event_id
-        WHERE b.id = %s
+       SELECT b.*, e.name AS event_name, o.name AS organizer_name, o.email AS organizer_email, o.phone AS organizer_phone
+FROM bookings b
+JOIN events e ON e.id = b.event_id
+LEFT JOIN organizers o ON o.id = e.organizer_id WHERE b.id = %s
     """, (booking_id,))
     row = cursor.fetchone()
     cursor.close()
@@ -65,10 +68,10 @@ def get_bookings_by_email(email):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT b.*, e.name AS event_name
-        FROM bookings b
-        JOIN events e ON e.id = b.event_id
-        WHERE b.email = %s
+      SELECT b.*, e.name AS event_name, o.name AS organizer_name, o.email AS organizer_email, o.phone AS organizer_phone
+FROM bookings b
+JOIN events e ON e.id = b.event_id
+LEFT JOIN organizers o ON o.id = e.organizer_id WHERE b.email = %s
         ORDER BY b.created_at DESC
     """, (email,))
     rows = cursor.fetchall()
@@ -81,10 +84,10 @@ def get_all_bookings():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT b.*, e.name AS event_name
-        FROM bookings b
-        JOIN events e ON e.id = b.event_id
-        ORDER BY b.created_at DESC
+        SELECT b.*, e.name AS event_name, o.name AS organizer_name, o.email AS organizer_email, o.phone AS organizer_phone
+FROM bookings b
+JOIN events e ON e.id = b.event_id
+LEFT JOIN organizers o ON o.id = e.organizer_id ORDER BY b.created_at DESC
     """)
     rows = cursor.fetchall()
     cursor.close()

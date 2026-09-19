@@ -14,9 +14,9 @@ export default function Footer() {
         <div className="footer-col">
           <h4>Explore</h4>
           <Link to="/events">All Events</Link>
-          <Link to="/events">Music</Link>
-          <Link to="/events">Technology</Link>
-          <Link to="/events">Sports</Link>
+          <Link to="/events?category=Music">Music</Link>
+          <Link to="/events?category=Technology">Technology</Link>
+          <Link to="/events?category=Sports">Sports</Link>
         </div>
 
         <div className="footer-col">
@@ -28,13 +28,13 @@ export default function Footer() {
 
         <div className="footer-col">
           <h4>Company</h4>
-          <a href="#!">About BookTix</a>
-          <a href="#!">Contact Support</a>
-          <a href="#!">Terms &amp; Privacy</a>
+          <Link to="/about">About BookTix</Link>
+          <Link to="/contact">Contact Support</Link>
+          <Link to="/privacy">Terms &amp; Privacy</Link>
         </div>
       </div>
       <div className="footer-bottom">
-        <div className="container flex-between">
+        <div className="container footer-legal">
           <span>© {new Date().getFullYear()} BookTix. All rights reserved.</span>
           <span>Built for demo &amp; internship purposes.</span>
         </div>

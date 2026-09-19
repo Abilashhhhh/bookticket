@@ -106,6 +106,32 @@ export function AppProvider({ children }) {
       return { ok: false, message: err.message };
     }
   };
+    const sendOtp = async (email, purpose) => {
+    try {
+      await apiRequest('/auth/send-otp', { method: 'POST', body: { email, purpose } });
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, message: err.message };
+    }
+  };
+
+  const verifyOtp = async (email, otp, purpose) => {
+    try {
+      await apiRequest('/auth/verify-otp', { method: 'POST', body: { email, otp, purpose } });
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, message: err.message };
+    }
+  };
+
+  const resetPassword = async (email, password) => {
+    try {
+      await apiRequest('/auth/reset-password', { method: 'POST', body: { email, password } });
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, message: err.message };
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem('booktix_token');
@@ -159,7 +185,7 @@ export function AppProvider({ children }) {
     events, addEvent, updateEvent, deleteEvent,
     bookings, addBooking, confirmBookingPayment, myBookings, getBookingById,
     users, organizers,
-    currentUser, login, register, logout,
+    currentUser, login, register, logout, sendOtp, verifyOtp, resetPassword,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -38,3 +38,5 @@ def send_otp_email(to_email: str, otp_code: str, purpose: str):
         server.starttls()
         server.login(gmail_address, gmail_app_password)
         server.sendmail(gmail_address, to_email, msg.as_string())
+        
+        

@@ -127,12 +127,7 @@ export default function Payment() {
                 </div>
               </>
             )}
-            {method === 'upi' && (
-              <div className="field">
-                <label>UPI ID</label>
-                <input required placeholder="yourname@upi" value={upiId} onChange={(e) => setUpiId(e.target.value)} /> {errors.upi && <p className="field-error">{errors.upi}</p>}
-              </div>
-            )}
+      
                         {(method === 'upi' || method === 'gpay' || method === 'phonepe') && (
               <div className="field">
                 <label>UPI ID</label>
@@ -150,6 +145,7 @@ export default function Payment() {
                 )}
               </div>
             )}
+            {method === 'netbanking' && ( <div className="field"> <label>Select bank</label> <select required defaultValue=""> <option value="" disabled>Choose your bank</option> <option>State Bank of India</option> <option>HDFC Bank</option> <option>ICICI Bank</option> <option>Axis Bank</option> </select> </div> )}
 
             <button type="submit" className="btn btn-primary btn-block" disabled={processing}>
               {processing ? 'Processing payment…' : `Pay ${currency(booking.amount)}`}

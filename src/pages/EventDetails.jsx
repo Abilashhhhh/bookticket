@@ -45,6 +45,13 @@ export default function EventDetails() {
               <div><span>🕒 Time</span><strong>{event.time}</strong></div>
               <div><span>📍 Venue</span><strong>{event.venue}</strong></div>
               <div><span>🏷️ Organizer</span><strong>{event.organizer}</strong></div>
+{(event.organizerEmail || event.organizerPhone) && (
+  <div className="card" style={{ marginTop: 16, padding: 16 }}>
+    <p className="muted" style={{ marginBottom: 8 }}>Having an issue with this event? Contact the organizer directly:</p>
+    {event.organizerEmail && <p style={{ margin: '4px 0' }}>✉️ <a href={`mailto:${event.organizerEmail}`}>{event.organizerEmail}</a></p>}
+    {event.organizerPhone && <p style={{ margin: '4px 0' }}>📞 <a href={`tel:${event.organizerPhone}`}>{event.organizerPhone}</a></p>}
+  </div>
+)}
             </div>
           </div>
 

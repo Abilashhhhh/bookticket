@@ -21,6 +21,8 @@ def _row_to_dict(row):
         'venue': row['venue'],
         'city': row['city'],
         'organizer': row.get('organizer_name') or '',
+        'organizerEmail': row.get('organizer_email') or '',
+        'organizerPhone': row.get('organizer_phone') or '',
         'price': float(row['price']),
         'pricePremium': float(row['price_premium']) if row.get('price_premium') is not None else round(float(row['price']) * 1.6, 2),
         'priceVip': float(row['price_vip']) if row.get('price_vip') is not None else round(float(row['price']) * 2.2, 2),
@@ -36,7 +38,7 @@ def get_all_events(category=None, city=None, search=None):
     conn = get_connection()
     cursor = conn.cursor()
     query = """
-        SELECT e.*, o.name AS organizer_name
+        SELECT e.*, o.name AS organizer_name, o.email AS organizer_email, o.phone AS organizer_phone
         FROM events e
         LEFT JOIN organizers o ON o.id = e.organizer_id
         WHERE 1=1
@@ -65,7 +67,7 @@ def get_event_by_id(event_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT e.*, o.name AS organizer_name
+        SELECT e.*, o.name AS organizer_name, o.email AS organizer_email, o.phone AS organizer_phone
         FROM events e
         LEFT JOIN organizers o ON o.id = e.organizer_id
         WHERE e.id = %s

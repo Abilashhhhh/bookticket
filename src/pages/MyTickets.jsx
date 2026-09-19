@@ -76,9 +76,16 @@ export default function MyTickets() {
                   <div><span>Payment</span><strong className={`pay-${b.paymentStatus.toLowerCase()}`}>{b.paymentStatus}</strong></div>
                 </div>
               </div>
-              {b.paymentStatus === 'Pending' && (
-                <Link to={`/payment/${b.rawId}`} className="btn btn-primary btn-sm">Complete Payment</Link>
-              )}
+         {(b.organizerEmail || b.organizerPhone) && (
+  <p className="muted" style={{ marginTop: 8, fontSize: 13 }}>
+    Need help? Contact {b.organizerName || 'the organizer'}:
+    {b.organizerEmail && <> <a href={`mailto:${b.organizerEmail}`}>{b.organizerEmail}</a></>}
+    {b.organizerPhone && <> · <a href={`tel:${b.organizerPhone}`}>{b.organizerPhone}</a></>}
+  </p>
+)}
+{b.paymentStatus === 'Pending' && (
+  <Link to={`/payment/${b.rawId}`} className="btn btn-primary btn-sm">Complete Payment</Link>
+)}
             </div>
           ))}
         </div>
