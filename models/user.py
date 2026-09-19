@@ -51,3 +51,12 @@ def get_all_users():
     cursor.close()
     conn.close()
     return users
+def update_password(email, password_hash):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password_hash = %s WHERE email = %s", (password_hash, email))
+    conn.commit()
+    affected = cursor.rowcount
+    cursor.close()
+    conn.close()
+    return affected > 0

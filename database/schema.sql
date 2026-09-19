@@ -60,3 +60,14 @@ CREATE TABLE IF NOT EXISTS bookings (
 CREATE INDEX idx_bookings_email ON bookings(email);
 CREATE INDEX idx_events_category ON events(category);
 CREATE INDEX idx_events_city ON events(city);
+CREATE TABLE IF NOT EXISTS otp_verifications (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    email       VARCHAR(255) NOT NULL,
+    otp_code    VARCHAR(6) NOT NULL,
+    purpose     VARCHAR(20) NOT NULL,
+    verified    TINYINT(1) NOT NULL DEFAULT 0,
+    expires_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_otp_email_purpose ON otp_verifications(email, purpose);
