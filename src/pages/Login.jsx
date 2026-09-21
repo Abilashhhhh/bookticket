@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Logo from '../components/Logo';
 import './auth.css';
-import PasswordInput from '../components/PasswordInput';
+import PasswordInput from '../components/passwordinput';
 
 export default function Login() {
   const { login } = useApp();
