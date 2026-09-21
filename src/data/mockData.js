@@ -17,5 +17,6 @@ export const ticketTypesFor = (event) => {
   return types;
 };
 
+
 export const currency = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 
