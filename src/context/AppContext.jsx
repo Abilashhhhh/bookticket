@@ -159,6 +159,10 @@ export function AppProvider({ children }) {
     await apiRequest(`/events/${id}`, { method: 'DELETE', token });
     await refreshEvents();
   };
+    const updateOrganizer = async (id, data) => {
+    await apiRequest(`/organizers/${id}`, { method: 'PUT', body: data, token });
+    await refreshAdminData();
+  };
 
   // ---- bookings ----
   const addBooking = async (bookingData) => {
@@ -184,7 +188,7 @@ export function AppProvider({ children }) {
   const value = {
     events, addEvent, updateEvent, deleteEvent,
     bookings, addBooking, confirmBookingPayment, myBookings, getBookingById,
-    users, organizers,
+    users, organizers, updateOrganizer,
     currentUser, login, register, logout, sendOtp, verifyOtp, resetPassword,
   };
 

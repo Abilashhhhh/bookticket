@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Logo from '../components/Logo';
 import './auth.css';
+import PasswordInput from '../components/PasswordInput';
 
 export default function Login() {
   const { login } = useApp();
@@ -41,7 +42,7 @@ export default function Login() {
           </div>
           <div className="field">
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" required placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+            <PasswordInput id="password" required placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
           </div>
           <button type="submit" className="btn btn-primary btn-block">Log In</button>
           <p style={{ textAlign: 'right', marginTop: 8 }}>

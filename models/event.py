@@ -24,8 +24,8 @@ def _row_to_dict(row):
         'organizerEmail': row.get('organizer_email') or '',
         'organizerPhone': row.get('organizer_phone') or '',
         'price': float(row['price']),
-        'pricePremium': float(row['price_premium']) if row.get('price_premium') is not None else round(float(row['price']) * 1.6, 2),
-        'priceVip': float(row['price_vip']) if row.get('price_vip') is not None else round(float(row['price']) * 2.2, 2),
+        'pricePremium': float(row['price_premium']) if row.get('price_premium') is not None else None,
+        'priceVip': float(row['price_vip']) if row.get('price_vip') is not None else None,
         'totalTickets': row['total_tickets'],
         'ticketsSold': row['tickets_sold'],
         'status': row['status'],
@@ -81,8 +81,8 @@ def get_event_by_id(event_id):
 def create_event(data):
     organizer_id = get_or_create_organizer_id(data.get('organizer'))
     price = data['price']
-    price_premium = data.get('pricePremium') or round(float(price) * 1.6, 2)
-    price_vip = data.get('priceVip') or round(float(price) * 2.2, 2)
+    price_premium = data.get('pricePremium')
+    price_vip = data.get('priceVip')
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -106,8 +106,8 @@ def create_event(data):
 def update_event(event_id, data):
     organizer_id = get_or_create_organizer_id(data.get('organizer'))
     price = data['price']
-    price_premium = data.get('pricePremium') or round(float(price) * 1.6, 2)
-    price_vip = data.get('priceVip') or round(float(price) * 2.2, 2)
+    price_premium = data.get('pricePremium')
+    price_vip = data.get('priceVip')
 
     conn = get_connection()
     cursor = conn.cursor()

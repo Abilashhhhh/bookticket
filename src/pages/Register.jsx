@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Logo from '../components/Logo';
 import './auth.css';
+import PasswordInput from '../components/PasswordInput';
 
 export default function Register() {
   const { register, sendOtp, verifyOtp } = useApp();
@@ -104,11 +105,11 @@ export default function Register() {
             <div className="field-row">
               <div className="field">
                 <label htmlFor="password">Password</label>
-                <input id="password" type="password" required placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                <PasswordInput id="password" required placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
               </div>
               <div className="field">
                 <label htmlFor="confirm">Confirm password</label>
-                <input id="confirm" type="password" required placeholder="••••••••" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} />
+                <PasswordInput id="confirm" required placeholder="••••••••" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} />
               </div>
             </div>
             <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
